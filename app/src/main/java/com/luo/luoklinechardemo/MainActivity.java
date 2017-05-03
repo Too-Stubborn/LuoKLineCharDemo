@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         mChart.setNoDataText("加载中...");
         mChart.setAutoScaleMinMaxEnabled(true);
         mChart.setDragEnabled(true);
+        mChart.setDoubleTapToZoomEnabled(false);
         mChart.setDrawOrder(new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
 
 
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
         combinedData.setData(lineData);
         mChart.setData(combinedData);//当前屏幕会显示所有的数据
+        mChart.animateX(2000);
         mChart.invalidate();
     }
 
