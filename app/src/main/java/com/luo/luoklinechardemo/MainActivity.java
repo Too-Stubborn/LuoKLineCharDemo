@@ -109,13 +109,15 @@ public class MainActivity extends AppCompatActivity {
                 float change = (candleEntry.getClose() - candleEntry.getOpen()) / candleEntry.getOpen();
                 NumberFormat nf = NumberFormat.getPercentInstance();
                 nf.setMaximumFractionDigits(2);
+                StockListBean.StockBean  stockBean = stockBeans.get(candleEntry.getXIndex());
                 String changePercentage = nf.format(Double.valueOf(String.valueOf(change)));
                 Log.d("qqq", "最高" + candleEntry.getHigh() + " 最低" + candleEntry.getLow() +
                         " 开盘" + candleEntry.getOpen() + " 收盘" + candleEntry.getClose() +
-                        " 涨跌幅" + changePercentage);
+                        " 涨跌幅" + changePercentage+"  MA5:"+stockBean.getMa5()+ "  MA10:"+stockBean.getMa10()+ "   MA20:"+stockBean.getMa20());
+
 
                 int[] colors = {colorMa5, colorMa10, colorMa20};
-                String[] labels =new String[]{"MA5:"+candleEntry.getHigh(), "MA10:"+candleEntry.getMa10(), "MA20:"+candleEntry.getHigh()};
+                String[] labels =new String[]{"MA5:"+stockBean.getMa5(), "MA10:"+stockBean.getMa10(), "MA20:"+stockBean.getMa20()};
                 legend.setCustom(colors, labels);
             }
 
@@ -125,14 +127,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    List<StockListBean.StockBean> stockBeans;
     private void loadChartData() {
         mChart.resetTracking();
 
         candleEntries = Model.getCandleEntries();
 
         itemcount = candleEntries.size();
-        List<StockListBean.StockBean> stockBeans = Model.getData();
+        stockBeans = Model.getData();
         xVals = new ArrayList<>();
         for (int i = 0; i < itemcount; i++) {
             xVals.add(stockBeans.get(i).getDate());
