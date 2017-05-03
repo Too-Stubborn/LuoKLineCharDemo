@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private CombinedData combinedData;
     private CandleData candleData;
     private LineData lineData;
+    Legend legend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,10 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
         int[] colors = {colorMa5, colorMa10, colorMa20};
         String[] labels = {"MA5", "MA10", "MA20"};
-        Legend legend = mChart.getLegend();
+         legend = mChart.getLegend();
         legend.setCustom(colors, labels);
+        legend.setXEntrySpace(70f);
         legend.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
-        legend.setTextColor(Color.WHITE);
+        legend.setTextColor(Color.BLACK);
 
         mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -111,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("qqq", "最高" + candleEntry.getHigh() + " 最低" + candleEntry.getLow() +
                         " 开盘" + candleEntry.getOpen() + " 收盘" + candleEntry.getClose() +
                         " 涨跌幅" + changePercentage);
+
+                int[] colors = {colorMa5, colorMa10, colorMa20};
+                String[] labels =new String[]{"MA5:"+candleEntry.getHigh(), "MA10:"+candleEntry.getMa10(), "MA20:"+candleEntry.getHigh()};
+                legend.setCustom(colors, labels);
             }
 
             @Override
