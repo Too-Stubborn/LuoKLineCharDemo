@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setGridColor(colorLine);
         xAxis.setTextColor(colorText);
         xAxis.setSpaceBetweenLabels(4);
+        xAxis.setAvoidFirstLastClipping(true);//时间分隔靠右不至于压缩不可见时间
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setLabelCount(8, false);
@@ -95,8 +96,14 @@ public class MainActivity extends AppCompatActivity {
         leftAxis.setDrawAxisLine(false);
         leftAxis.setGridColor(colorLine);
         leftAxis.setTextColor(colorText);
+//        leftAxis.setEnabled(false);
 
         YAxis rightAxis = mChart.getAxisRight();
+//        rightAxis.setLabelCount(8, false);
+//        rightAxis.setDrawGridLines(true);//网格线的Y显示
+//        rightAxis.setDrawAxisLine(false);
+//        rightAxis.setGridColor(colorLine);
+//        rightAxis.setTextColor(colorText);
         rightAxis.setEnabled(false);
 
         int[] colors = {colorMa5, colorMa10, colorMa20};
