@@ -80,15 +80,15 @@ public class MainActivity extends AppCompatActivity {
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(true);
+        xAxis.setDrawGridLines(false);//网格线的X显示
         xAxis.setGridColor(colorLine);
         xAxis.setTextColor(colorText);
         xAxis.setSpaceBetweenLabels(4);
 
         YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setLabelCount(4, false);
-        leftAxis.setDrawGridLines(true);
-        leftAxis.setDrawAxisLine(true);
+        leftAxis.setLabelCount(8, false);
+        leftAxis.setDrawGridLines(true);//网格线的Y显示
+        leftAxis.setDrawAxisLine(false);
         leftAxis.setGridColor(colorLine);
         leftAxis.setTextColor(colorText);
 
