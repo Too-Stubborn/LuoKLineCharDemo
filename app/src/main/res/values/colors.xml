@@ -10,4 +10,6 @@
     <color name="common_divider">#303341</color>
     <color name="home_page_bg">#FFFFFF</color>
     <color name="text_grey_light">#A7ADBC</color>
+    <color name="k_line_green">#217821</color>
+    <color name="k_line_red">#FF0000</color>
 </resources>

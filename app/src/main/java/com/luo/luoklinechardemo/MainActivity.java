@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private int colorMa5;
     private int colorMa10;
     private int colorMa20;
+    private int kLineGreen;
+    private int kLineRed;
 
     private int itemcount;
     private List<CandleEntry> candleEntries = new ArrayList<>();
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         colorMa5 = getResources().getColor(R.color.ma5);
         colorMa10 = getResources().getColor(R.color.ma10);
         colorMa20 = getResources().getColor(R.color.ma20);
+        kLineGreen=getResources().getColor(R.color.k_line_green);
+        kLineRed=getResources().getColor(R.color.k_line_red);
 
         mChart.setDescription("");
         mChart.setDrawGridBackground(true);
@@ -179,15 +183,15 @@ public class MainActivity extends AppCompatActivity {
 
         CandleDataSet set = new CandleDataSet(candleEntries, "");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setShadowWidth(0.7f);
-        set.setDecreasingColor(Color.RED);
+        set.setShadowWidth(1f);
+        set.setDecreasingColor(kLineRed);//下降颜色
         set.setDecreasingPaintStyle(Paint.Style.FILL);
-        set.setIncreasingColor(Color.GREEN);
-        set.setIncreasingPaintStyle(Paint.Style.STROKE);
-        set.setNeutralColor(Color.RED);
+        set.setIncreasingColor(kLineGreen);//增加，增长颜色
+        set.setIncreasingPaintStyle(Paint.Style.FILL);
+        set.setNeutralColor(kLineRed);//中立颜色
         set.setShadowColorSameAsCandle(true);
-        set.setHighlightLineWidth(0.5f);
-        set.setHighLightColor(Color.WHITE);
+        set.setHighlightLineWidth(1.5f);
+        set.setHighLightColor(Color.BLACK);
         set.setDrawValues(false);
 
         CandleData candleData = new CandleData(xVals);
