@@ -193,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
         set.setShadowColorSameAsCandle(true);
         set.setHighlightLineWidth(0.7f);
         set.setHighLightColor(Color.BLACK);
+        set.setDrawHorizontalHighlightIndicator(true);//拖动线是否有水平线
+        set.setDrawHighlightIndicators(true);//拖动有线否
         set.setDrawValues(false);
 
         CandleData candleData = new CandleData(xVals);
