@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         legend.setXEntrySpace(70f);
         legend.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
         legend.setTextColor(Color.BLACK);
+        legend.setForm(Legend.LegendForm.CIRCLE);
 
         mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         set.setIncreasingPaintStyle(Paint.Style.FILL);
         set.setNeutralColor(kLineRed);//中立颜色
         set.setShadowColorSameAsCandle(true);
-        set.setHighlightLineWidth(1.5f);
+        set.setHighlightLineWidth(0.7f);
         set.setHighLightColor(Color.BLACK);
         set.setDrawValues(false);
 
