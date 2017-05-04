@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         kLineGreen=getResources().getColor(R.color.k_line_green);
         kLineRed=getResources().getColor(R.color.k_line_red);
 
+        stockBeans = Model.getData();
         mChart.setDescription("");
         mChart.setDrawGridBackground(true);
         mChart.setBackgroundColor(colorHomeBg);
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         rightAxis.setEnabled(false);
 
         int[] colors = {colorMa5, colorMa10, colorMa20};
-        String[] labels = {"MA5", "MA10", "MA20"};
+        String[] labels = {"MA5   "+stockBeans.get(stockBeans.size()-1).getMa5(), "MA10   "+stockBeans.get(stockBeans.size()-1).getMa10(), "MA20   "+stockBeans.get(stockBeans.size()-1).getMa20()};
          legend = mChart.getLegend();
         legend.setCustom(colors, labels);
         legend.setXEntrySpace(70f);
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         candleEntries = Model.getCandleEntries();
 
         itemcount = candleEntries.size();
-        stockBeans = Model.getData();
+
         xVals = new ArrayList<>();
         for (int i = 0; i < itemcount; i++) {
             xVals.add(stockBeans.get(i).getDate());
