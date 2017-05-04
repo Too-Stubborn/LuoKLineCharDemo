@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 nf.setMaximumFractionDigits(2);
                 StockListBean.StockBean  stockBean = stockBeans.get(candleEntry.getXIndex());
                 String changePercentage = nf.format(Double.valueOf(String.valueOf(change)));
-                Log.d("qqq", "最高" + candleEntry.getHigh() + " 最低" + candleEntry.getLow() +
+                Log.d("qqq","时间：" + stockBean.getDate() + "最高" + candleEntry.getHigh() + " 最低" + candleEntry.getLow() +
                         " 开盘" + candleEntry.getOpen() + " 收盘" + candleEntry.getClose() +
                         " 涨跌幅" + changePercentage+"  MA5:"+stockBean.getMa5()+ "  MA10:"+stockBean.getMa10()+ "   MA20:"+stockBean.getMa20());
 
