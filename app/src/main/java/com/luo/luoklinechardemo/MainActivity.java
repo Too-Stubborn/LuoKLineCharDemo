@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 int[] colors = {colorMa5, colorMa10, colorMa20};
-                String[] labels =new String[]{"MA5:"+stockBean.getMa5(), "MA10:"+stockBean.getMa10(), "MA20:"+stockBean.getMa20()};
+                String[] labels =new String[]{"MA5   "+stockBean.getMa5(), "MA10   "+stockBean.getMa10(), "MA20   "+stockBean.getMa20()};
                 legend.setCustom(colors, labels);
             }
 
