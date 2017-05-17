@@ -10,7 +10,7 @@
         android:theme="@style/Theme.Start">
         <activity
             android:screenOrientation="landscape"
-            android:name=".MainActivity">
+            android:name=".OneMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,11 +20,10 @@
         <activity
             android:screenOrientation="landscape"
             android:name=".MinutesActivity">
-           <!-- <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+        </activity>
+        <activity
+            android:screenOrientation="landscape"
+            android:name=".MainActivity">
         </activity>
     </application>
 
