@@ -12,4 +12,12 @@
     <color name="text_grey_light">#A7ADBC</color>
     <color name="k_line_green">#217821</color>
     <color name="k_line_red">#FF0000</color>
+    <color name="minute_grayLine">#2D3945</color>
+    <color name="minute_blue">#00D0FC</color>
+    <color name="minute_yellow">#E7B448</color>
+    <color name="minute_black">#101419</color>
+    <color name="minute_jizhun">#7F9976</color>
+    <color name="minute_zhoutv">#858D93</color>
+    <color name="marker_bg">#1C232E</color>
+    <color name="touming">#00000000</color>
 </resources>

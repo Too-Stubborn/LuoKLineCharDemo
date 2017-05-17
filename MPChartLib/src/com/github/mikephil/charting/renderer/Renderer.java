@@ -1,8 +1,6 @@
 
 package com.github.mikephil.charting.renderer;
 
-import android.util.Log;
-
 import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -39,10 +37,7 @@ public abstract class Renderer {
      */
     protected boolean fitsBounds(float val, float min, float max) {
 
-        if (val < min || val > max)
-            return false;
-        else
-            return true;
+        return !(val < min || val > max);
     }
 
     /**
@@ -61,6 +56,5 @@ public abstract class Renderer {
         
         mMinX = Math.max((low / xAxisModulus) * (xAxisModulus) - subLow, 0);
         mMaxX = Math.min((high / xAxisModulus) * (xAxisModulus) + xAxisModulus, (int) dataProvider.getXChartMax());
-//        Log.d("xxx","mMinx="+mMinX+";mMaxX="+mMaxX);
     }
 }

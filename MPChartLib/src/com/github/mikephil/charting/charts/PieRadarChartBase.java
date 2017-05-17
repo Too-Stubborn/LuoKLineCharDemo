@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
@@ -181,7 +180,7 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends IDataSet<?
                     break;
 
                 case HORIZONTAL:
-                    float yLegendOffset = 0.f;
+                    float yLegendOffset;
 
                     if (mLegend.getVerticalAlignment() == Legend.LegendVerticalAlignment.TOP ||
                             mLegend.getVerticalAlignment() == Legend.LegendVerticalAlignment.BOTTOM) {
@@ -282,9 +281,8 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends IDataSet<?
      */
     protected PointF getPosition(PointF center, float dist, float angle) {
 
-        PointF p = new PointF((float) (center.x + dist * Math.cos(Math.toRadians(angle))),
+        return new PointF((float) (center.x + dist * Math.cos(Math.toRadians(angle))),
                 (float) (center.y + dist * Math.sin(Math.toRadians(angle))));
-        return p;
     }
 
     /**
@@ -299,10 +297,10 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends IDataSet<?
 
         PointF c = getCenterOffsets();
 
-        float dist = 0f;
+        float dist;
 
-        float xDist = 0f;
-        float yDist = 0f;
+        float xDist;
+        float yDist;
 
         if (x > c.x) {
             xDist = x - c.x;
@@ -451,7 +449,7 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends IDataSet<?
      */
     public List<SelectionDetail> getSelectionDetailsAtIndex(int xIndex) {
 
-        List<SelectionDetail> vals = new ArrayList<SelectionDetail>();
+        List<SelectionDetail> vals = new ArrayList<>();
 
         for (int i = 0; i < mData.getDataSetCount(); i++) {
 
@@ -459,7 +457,7 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends IDataSet<?
 
             // extract all y-values from all DataSets at the given x-index
             final float yVal = dataSet.getYValForXIndex(xIndex);
-            if (yVal == Float.NaN)
+            if (Float.isNaN(yVal))
                 continue;
 
             vals.add(new SelectionDetail(yVal, i, dataSet));

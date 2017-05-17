@@ -25,7 +25,9 @@ public class BarChartRenderer extends DataRenderer {
 
     protected BarDataProvider mChart;
 
-    /** the rect object that is used for drawing the bars */
+    /**
+     * the rect object that is used for drawing the bars
+     */
     protected RectF mBarRect = new RectF();
 
     protected BarBuffer[] mBarBuffers;
@@ -34,7 +36,7 @@ public class BarChartRenderer extends DataRenderer {
     protected Paint mBarBorderPaint;
 
     public BarChartRenderer(BarDataProvider chart, ChartAnimator animator,
-            ViewPortHandler viewPortHandler) {
+                            ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         this.mChart = chart;
 
@@ -69,11 +71,9 @@ public class BarChartRenderer extends DataRenderer {
     public void drawData(Canvas c) {
 
         BarData barData = mChart.getBarData();
-
         for (int i = 0; i < barData.getDataSetCount(); i++) {
 
             IBarDataSet set = barData.getDataSetByIndex(i);
-
             if (set.isVisible() && set.getEntryCount() > 0) {
                 drawDataSet(c, set, i);
             }
@@ -86,7 +86,7 @@ public class BarChartRenderer extends DataRenderer {
 
         mShadowPaint.setColor(dataSet.getBarShadowColor());
         mBarBorderPaint.setColor(dataSet.getBarBorderColor());
-        mBarBorderPaint.setStrokeWidth(dataSet.getBarBorderWidth());
+        mBarBorderPaint.setStrokeWidth(Utils.convertDpToPixel(dataSet.getBarBorderWidth()));
 
         final boolean drawBorder = dataSet.getBarBorderWidth() > 0.f;
 
@@ -103,6 +103,8 @@ public class BarChartRenderer extends DataRenderer {
         buffer.feed(dataSet);
 
         trans.pointValuesToPixel(buffer.buffer);
+
+
 
         // draw the bar shadow before the values
         if (mChart.isDrawBarShadowEnabled()) {
@@ -134,7 +136,16 @@ public class BarChartRenderer extends DataRenderer {
 
                 // Set the color for the currently drawn value. If the index
                 // is out of bounds, reuse colors.
-                mRenderPaint.setColor(dataSet.getColor(j / 4));
+                   /*应网友要求，柱状图加颜色，博主不知道颜色规则，但是代码逻辑上是如此，这里给出的规则是假如成交量上涨，则为红，下跌则为绿*/
+                int i = j / 4;
+                if (i > 0) {
+                    if (dataSet.getEntryForIndex(i).getVal() > dataSet.getEntryForIndex(i - 1).getVal()) {
+                        mRenderPaint.setColor(Color.RED);
+                    } else {
+                        mRenderPaint.setColor(Color.GREEN);
+                    }
+                }
+              //  mRenderPaint.setColor(dataSet.getColor(j / 4));
                 c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                         buffer.buffer[j + 3], mRenderPaint);
 
@@ -146,7 +157,6 @@ public class BarChartRenderer extends DataRenderer {
         } else {
 
             mRenderPaint.setColor(dataSet.getColor());
-
             for (int j = 0; j < buffer.size(); j += 4) {
 
                 if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2]))
@@ -155,9 +165,12 @@ public class BarChartRenderer extends DataRenderer {
                 if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j]))
                     break;
 
+                mRenderPaint.setColor(dataSet.getColor(j / 4));
+                /*重写柱状图宽度*/
                 c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                         buffer.buffer[j + 3], mRenderPaint);
-
+              /*  c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2] - (buffer.buffer[j + 2] - buffer.buffer[j]) / 3,
+                        buffer.buffer[j + 3], mRenderPaint);*/
                 if (drawBorder) {
                     c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                             buffer.buffer[j + 3], mBarBorderPaint);
@@ -168,15 +181,15 @@ public class BarChartRenderer extends DataRenderer {
 
     /**
      * Prepares a bar for being highlighted.
-     * 
-     * @param x the x-position
-     * @param y1 the y1-position
-     * @param y2 the y2-position
+     *
+     * @param x            the x-position
+     * @param y1           the y1-position
+     * @param y2           the y2-position
      * @param barspaceHalf the space between bars
      * @param trans
      */
     protected void prepareBarHighlight(float x, float y1, float y2, float barspaceHalf,
-            Transformer trans) {
+                                       Transformer trans) {
 
         float barWidth = 0.5f;
 
@@ -198,8 +211,8 @@ public class BarChartRenderer extends DataRenderer {
             List<IBarDataSet> dataSets = mChart.getBarData().getDataSets();
 
             final float valueOffsetPlus = Utils.convertDpToPixel(4.5f);
-            float posOffset = 0f;
-            float negOffset = 0f;
+            float posOffset;
+            float negOffset;
             boolean drawValueAboveBar = mChart.isDrawValueAboveBarEnabled();
 
             for (int i = 0; i < mChart.getBarData().getDataSetCount(); i++) {
@@ -325,87 +338,103 @@ public class BarChartRenderer extends DataRenderer {
     @Override
     public void drawHighlighted(Canvas c, Highlight[] indices) {
 
-        int setCount = mChart.getBarData().getDataSetCount();
+        BarData barData = mChart.getBarData();
+        int setCount = barData.getDataSetCount();
 
-        for (int i = 0; i < indices.length; i++) {
+        for (Highlight high : indices) {
 
-            Highlight h = indices[i];
-            int index = h.getXIndex();
-
-            int dataSetIndex = h.getDataSetIndex();
-            IBarDataSet set = mChart.getBarData().getDataSetByIndex(dataSetIndex);
-
-            if (set == null || !set.isHighlightEnabled())
+            final int minDataSetIndex = high.getDataSetIndex() == -1
+                    ? 0
+                    : high.getDataSetIndex();
+            final int maxDataSetIndex = high.getDataSetIndex() == -1
+                    ? barData.getDataSetCount()
+                    : (high.getDataSetIndex() + 1);
+            if (maxDataSetIndex - minDataSetIndex < 1) 
                 continue;
 
-            float barspaceHalf = set.getBarSpace() / 2f;
-            
-            Transformer trans = mChart.getTransformer(set.getAxisDependency());
+            for (int dataSetIndex = minDataSetIndex;
+                 dataSetIndex < maxDataSetIndex;
+                 dataSetIndex++) {
 
-            mHighlightPaint.setColor(set.getHighLightColor());
-            mHighlightPaint.setAlpha(set.getHighLightAlpha());
+                IBarDataSet set = barData.getDataSetByIndex(dataSetIndex);
 
-            // check outofbounds
-            if (index >= 0
-                    && index < (mChart.getXChartMax() * mAnimator.getPhaseX()) / setCount) {
-
-                BarEntry e = set.getEntryForXIndex(index);
-
-                if (e == null || e.getXIndex() != index)
+                if (set == null || !set.isHighlightEnabled())
                     continue;
 
-                float groupspace = mChart.getBarData().getGroupSpace();
-                boolean isStack = h.getStackIndex() < 0 ? false : true;
+                float barspaceHalf = set.getBarSpace() / 2f;
 
-                // calculate the correct x-position
-                float x = index * setCount + dataSetIndex + groupspace / 2f
-                        + groupspace * index;
+                Transformer trans = mChart.getTransformer(set.getAxisDependency());
 
-                final float y1;
-                final float y2;
+                mHighlightPaint.setColor(set.getHighLightColor());
+                mHighlightPaint.setAlpha(set.getHighLightAlpha());
 
-                if (isStack) {
-                    y1 = h.getRange().from;
-                    y2 = h.getRange().to;
-                } else {
-                    y1 = e.getVal();
-                    y2 = 0.f;
-                }
+                int index = high.getXIndex();
 
-                prepareBarHighlight(x, y1, y2, barspaceHalf, trans);
+                // check outofbounds
+                if (index >= 0
+                        && index < (mChart.getXChartMax() * mAnimator.getPhaseX()) / setCount) {
 
-                c.drawRect(mBarRect, mHighlightPaint);
+                    BarEntry e = set.getEntryForXIndex(index);
 
-                if (mChart.isDrawHighlightArrowEnabled()) {
+                    if (e == null || e.getXIndex() != index)
+                        continue;
 
-                    mHighlightPaint.setAlpha(255);
+                    float groupspace = barData.getGroupSpace();
+                    boolean isStack = high.getStackIndex() < 0 ? false : true;
 
-                    // distance between highlight arrow and bar
-                    float offsetY = mAnimator.getPhaseY() * 0.07f;
+                    // calculate the correct x-position
+                    float x = index * setCount + dataSetIndex + groupspace / 2f
+                            + groupspace * index;
 
-                    float[] values = new float[9];
-                    trans.getPixelToValueMatrix().getValues(values);
-                    final float xToYRel = Math.abs(values[Matrix.MSCALE_Y] / values[Matrix.MSCALE_X]);
+                    final float y1;
+                    final float y2;
 
-                    final float arrowWidth = set.getBarSpace() / 2.f;
-                    final float arrowHeight = arrowWidth * xToYRel;
+                    if (isStack) {
+                        y1 = high.getRange().from;
+                        y2 = high.getRange().to;
+                    } else {
+                        y1 = e.getVal();
+                        y2 = 0.f;
+                    }
 
-                    final float yArrow = (y1 > -y2 ? y1 : y1) * mAnimator.getPhaseY();
+                    prepareBarHighlight(x, y1, y2, barspaceHalf, trans);
 
-                    Path arrow = new Path();
-                    arrow.moveTo(x + 0.4f, yArrow + offsetY);
-                    arrow.lineTo(x + 0.4f + arrowWidth, yArrow + offsetY - arrowHeight);
-                    arrow.lineTo(x + 0.4f + arrowWidth, yArrow + offsetY + arrowHeight);
+                    /*重写高亮*/
+                    c.drawLine(mBarRect.centerX(), mViewPortHandler.getContentRect().bottom, mBarRect.centerX(), 0, mHighlightPaint);
+                    // c.drawRect(mBarRect, mHighlightPaint);
 
-                    trans.pathValueToPixel(arrow);
-                    c.drawPath(arrow, mHighlightPaint);
+                    if (mChart.isDrawHighlightArrowEnabled()) {
+
+                        mHighlightPaint.setAlpha(255);
+
+                        // distance between highlight arrow and bar
+                        float offsetY = mAnimator.getPhaseY() * 0.07f;
+
+                        float[] values = new float[9];
+                        trans.getPixelToValueMatrix().getValues(values);
+                        final float xToYRel = Math.abs(
+                                values[Matrix.MSCALE_Y] / values[Matrix.MSCALE_X]);
+
+                        final float arrowWidth = set.getBarSpace() / 2.f;
+                        final float arrowHeight = arrowWidth * xToYRel;
+
+                        final float yArrow = (y1 > -y2 ? y1 : y1) * mAnimator.getPhaseY();
+
+                        Path arrow = new Path();
+                        arrow.moveTo(x + 0.4f, yArrow + offsetY);
+                        arrow.lineTo(x + 0.4f + arrowWidth, yArrow + offsetY - arrowHeight);
+                        arrow.lineTo(x + 0.4f + arrowWidth, yArrow + offsetY + arrowHeight);
+
+                        trans.pathValueToPixel(arrow);
+                        c.drawPath(arrow, mHighlightPaint);
+                    }
                 }
             }
         }
     }
 
     public float[] getTransformedValues(Transformer trans, IBarDataSet data,
-            int dataSetIndex) {
+                                        int dataSetIndex) {
         return trans.generateTransformedValuesBarChart(data, dataSetIndex,
                 mChart.getBarData(),
                 mAnimator.getPhaseY());
@@ -417,5 +446,6 @@ public class BarChartRenderer extends DataRenderer {
     }
 
     @Override
-    public void drawExtras(Canvas c) { }
+    public void drawExtras(Canvas c) {
+    }
 }

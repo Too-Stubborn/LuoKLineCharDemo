@@ -20,12 +20,6 @@ public class CandleEntry extends Entry {
     /** open value */
     private float mOpen = 0f;
 
-    /** open value */
-    private float ma5= 0f;
-    private float ma10= 0f;
-    private float ma20= 0f;
-
-
     /**
      * Constructor.
      * 
@@ -35,17 +29,6 @@ public class CandleEntry extends Entry {
      * @param open The open value.
      * @param close The close value.
      */
-    public CandleEntry(int xIndex, float shadowH, float shadowL, float open, float close,float ma5,float ma10,float ma20) {
-        super((shadowH + shadowL) / 2f, xIndex);
-
-        this.mShadowHigh = shadowH;
-        this.mShadowLow = shadowL;
-        this.mOpen = open;
-        this.mClose = close;
-        this.ma5=ma5;
-        this.ma10=ma10;
-        this.ma20=ma20;
-    }
     public CandleEntry(int xIndex, float shadowH, float shadowL, float open, float close) {
         super((shadowH + shadowL) / 2f, xIndex);
 
@@ -105,10 +88,8 @@ public class CandleEntry extends Entry {
 
     public CandleEntry copy() {
 
-        CandleEntry c = new CandleEntry(getXIndex(), mShadowHigh, mShadowLow, mOpen,
+        return new CandleEntry(getXIndex(), mShadowHigh, mShadowLow, mOpen,
                 mClose, getData());
-
-        return c;
     }
 
     /**
@@ -161,29 +142,5 @@ public class CandleEntry extends Entry {
 
     public void setOpen(float mOpen) {
         this.mOpen = mOpen;
-    }
-
-    public float getMa5() {
-        return ma5;
-    }
-
-    public void setMa5(float ma5) {
-        this.ma5 = ma5;
-    }
-
-    public float getMa10() {
-        return ma10;
-    }
-
-    public void setMa10(float ma10) {
-        this.ma10 = ma10;
-    }
-
-    public float getMa20() {
-        return ma20;
-    }
-
-    public void setMa20(float ma20) {
-        this.ma20 = ma20;
     }
 }

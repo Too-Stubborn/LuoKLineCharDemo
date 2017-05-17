@@ -31,7 +31,7 @@ public class PieRadarChartTouchListener extends ChartTouchListener<PieRadarChart
      */
     private float mStartAngle = 0f;
 
-    private ArrayList<AngularVelocitySample> _velocitySamples = new ArrayList<AngularVelocitySample>();
+    private ArrayList<AngularVelocitySample> _velocitySamples = new ArrayList<>();
 
     private long mDecelerationLastTime = 0;
     private float mDecelerationAngularVelocity = 0.f;
@@ -192,8 +192,10 @@ public class PieRadarChartTouchListener extends ChartTouchListener<PieRadarChart
                 // has one DataSet)
                 if (mChart instanceof RadarChart) {
 
-                    dataSetIndex = Utils.getClosestDataSetIndex(valsAtIndex, distance
-                            / ((RadarChart) mChart).getFactor(), null);
+                    dataSetIndex = Utils.getClosestDataSetIndexByValue(
+                            valsAtIndex,
+                            distance / ((RadarChart) mChart).getFactor(),
+                            null);
                 }
 
                 if (dataSetIndex < 0) {

@@ -1,7 +1,6 @@
 package com.github.mikephil.charting.interfaces.datasets;
 
 import android.graphics.DashPathEffect;
-import android.graphics.drawable.Drawable;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -27,9 +26,17 @@ public interface ILineDataSet extends ILineRadarDataSet<Entry> {
      */
     float getCubicIntensity();
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @return
+     */
     @Deprecated
     boolean isDrawCubicEnabled();
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @return
+     */
     @Deprecated
     boolean isDrawSteppedEnabled();
 
@@ -37,6 +44,11 @@ public interface ILineDataSet extends ILineRadarDataSet<Entry> {
      * Returns the size of the drawn circles.
      */
     float getCircleRadius();
+
+    /**
+     * Returns the hole radius of the drawn circles.
+     */
+    float getCircleHoleRadius();
 
     /**
      * Returns the color at the given index of the DataSet's circle-color array.

@@ -61,8 +61,8 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
     protected List<T> mDataSets;
 
     public ChartData() {
-        mXVals = new ArrayList<String>();
-        mDataSets = new ArrayList<T>();
+        mXVals = new ArrayList<>();
+        mDataSets = new ArrayList<>();
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
      */
     public ChartData(List<String> xVals) {
         this.mXVals = xVals;
-        this.mDataSets = new ArrayList<T>();
+        this.mDataSets = new ArrayList<>();
         init();
     }
 
@@ -85,7 +85,7 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
      */
     public ChartData(String[] xVals) {
         this.mXVals = arrayToList(xVals);
-        this.mDataSets = new ArrayList<T>();
+        this.mDataSets = new ArrayList<>();
         init();
     }
 
@@ -144,9 +144,9 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
 
     /**
      * calculates the average length (in characters) across all x-value strings
+     * 修改源码，加入判断
      */
     private void calcXValMaximumLength() {
-
         if (mXVals.size() <= 0) {
             mXValMaximumLength = 1;
             return;
@@ -155,11 +155,12 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
         int max = 1;
 
         for (int i = 0; i < mXVals.size(); i++) {
+            if (mXVals.get(i) != null) {
+                int length = mXVals.get(i).length();
 
-            int length = mXVals.get(i).length();
-
-            if (length > max)
-                max = length;
+                if (length > max)
+                    max = length;
+            }
         }
 
         mXValMaximumLength = max;
@@ -472,9 +473,19 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
     public Entry getEntryForHighlight(Highlight highlight) {
         if (highlight.getDataSetIndex() >= mDataSets.size())
             return null;
-        else
-            return mDataSets.get(highlight.getDataSetIndex()).getEntryForXIndex(
-                    highlight.getXIndex());
+        else {
+            // The value of the highlighted entry could be NaN -
+            //   if we are not interested in highlighting a specific value.
+
+            List<?> entries = mDataSets.get(highlight.getDataSetIndex())
+                    .getEntriesForXIndex(highlight.getXIndex());
+            for (Object entry : entries)
+                if (((Entry)entry).getVal() == highlight.getValue() ||
+                        Float.isNaN(highlight.getValue()))
+                    return (Entry)entry;
+
+            return null;
+        }
     }
 
     /**
@@ -760,7 +771,7 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
     public int[] getColors() {
 
         if (mDataSets == null)
-            return null;
+            return new int[0];
 
         int clrcnt = 0;
 
@@ -831,10 +842,10 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
      */
     public static List<String> generateXVals(int from, int to) {
 
-        List<String> xvals = new ArrayList<String>();
+        List<String> xvals = new ArrayList<>();
 
         for (int i = from; i < to; i++) {
-            xvals.add("" + i);
+            xvals.add(Integer.toString(i));
         }
 
         return xvals;

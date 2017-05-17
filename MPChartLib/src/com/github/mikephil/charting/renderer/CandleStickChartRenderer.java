@@ -3,7 +3,6 @@ package com.github.mikephil.charting.renderer;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.data.CandleData;
@@ -18,6 +17,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.List;
 
+/*画蜡烛图、值、高亮*/
 public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
 
     protected CandleDataProvider mChart;
@@ -51,6 +51,7 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
         }
     }
 
+    @SuppressWarnings("ResourceAsColor")
     protected void drawDataSet(Canvas c, ICandleDataSet dataSet) {
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
@@ -65,21 +66,17 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
 
         mRenderPaint.setStrokeWidth(dataSet.getShadowWidth());
 
-//         draw the body
+        // draw the body
         for (int j = minx,
-             count = (int) Math.ceil((maxx - minx) * phaseX + (float) minx);
+             count = (int) Math.ceil((maxx - minx) * phaseX + (float)minx);
              j < count;
              j++) {
-//        int count = (int) Math.ceil((maxx - minx) * phaseX + (float) minx);
-//        for (int j = count - 1;
-//             j >= minx;
-//             j--) {
+
             // get the entry
             CandleEntry e = dataSet.getEntryForIndex(j);
 
-//            final int xIndex = count-1-e.getXIndex();
             final int xIndex = e.getXIndex();
-//            Log.d("xxx", "xIndex=" + xIndex);
+
             if (xIndex < minx || xIndex >= maxx)
                 continue;
 
@@ -314,38 +311,49 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
     @Override
     public void drawHighlighted(Canvas c, Highlight[] indices) {
 
-        for (int i = 0; i < indices.length; i++) {
+        CandleData candleData = mChart.getCandleData();
 
-            int xIndex = indices[i].getXIndex(); // get the
-            // x-position
+        for (Highlight high : indices) {
 
-            ICandleDataSet set = mChart.getCandleData().getDataSetByIndex(
-                    indices[i].getDataSetIndex());
-
-            if (set == null || !set.isHighlightEnabled())
+            final int minDataSetIndex = high.getDataSetIndex() == -1
+                    ? 0
+                    : high.getDataSetIndex();
+            final int maxDataSetIndex = high.getDataSetIndex() == -1
+                    ? candleData.getDataSetCount()
+                    : (high.getDataSetIndex() + 1);
+            if (maxDataSetIndex - minDataSetIndex < 1) 
                 continue;
 
-            CandleEntry e = set.getEntryForXIndex(xIndex);
+            for (int dataSetIndex = minDataSetIndex;
+                 dataSetIndex < maxDataSetIndex;
+                 dataSetIndex++) {
 
-            if (e == null || e.getXIndex() != xIndex)
-                continue;
+                int xIndex = high.getXIndex(); // get the
+                // x-position
 
-            float low = e.getLow() * mAnimator.getPhaseY();
-            float high = e.getHigh() * mAnimator.getPhaseY();
-            float y = (low + high) / 2f;
+                ICandleDataSet set = mChart.getCandleData().getDataSetByIndex(dataSetIndex);
 
-            float min = mChart.getYChartMin();
-            float max = mChart.getYChartMax();
+                if (set == null || !set.isHighlightEnabled())
+                    continue;
 
+                CandleEntry e = set.getEntryForXIndex(xIndex);
 
-            float[] pts = new float[]{
-                    xIndex, y
-            };
+                if (e == null || e.getXIndex() != xIndex)
+                    continue;
 
-            mChart.getTransformer(set.getAxisDependency()).pointValuesToPixel(pts);
+                float lowValue = e.getLow() * mAnimator.getPhaseY();
+                float highValue = e.getHigh() * mAnimator.getPhaseY();
+                float y = (lowValue + highValue) / 2f;
 
-            // draw the lines
-            drawHighlightLines(c, pts, set);
+                float[] pts = new float[]{
+                        xIndex, y
+                };
+
+                mChart.getTransformer(set.getAxisDependency()).pointValuesToPixel(pts);
+
+                // draw the lines
+                drawHighlightLines(c, pts, set);
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 
 package com.github.mikephil.charting.data;
 
-import android.graphics.Color;
 
 import com.github.mikephil.charting.interfaces.datasets.IBubbleDataSet;
 import com.github.mikephil.charting.utils.Utils;
@@ -40,7 +39,7 @@ public class BubbleDataSet extends BarLineScatterCandleBubbleDataSet<BubbleEntry
         if (mYVals == null)
             return;
 
-        if (mYVals.size() == 0)
+        if (mYVals.isEmpty())
             return;
 
         int endValue;
@@ -92,7 +91,7 @@ public class BubbleDataSet extends BarLineScatterCandleBubbleDataSet<BubbleEntry
     @Override
     public DataSet<BubbleEntry> copy() {
 
-        List<BubbleEntry> yVals = new ArrayList<BubbleEntry>();
+        List<BubbleEntry> yVals = new ArrayList<>();
 
         for (int i = 0; i < mYVals.size(); i++) {
             yVals.add(mYVals.get(i).copy());

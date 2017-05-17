@@ -43,7 +43,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         this.mYVals = yVals;
 
         if (mYVals == null)
-            mYVals = new ArrayList<T>();
+            mYVals = new ArrayList<>();
 
         calcMinMax(0, mYVals.size());
     }
@@ -83,10 +83,10 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
             }
         }
 
-        if (mYMin == Float.MAX_VALUE) {
+        /*if (mYMin == Float.MAX_VALUE) {
             mYMin = 0.f;
             mYMax = 0.f;
-        }
+        }*/
     }
 
     @Override
@@ -122,7 +122,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(toSimpleString());
         for (int i = 0; i < mYVals.size(); i++) {
             buffer.append(mYVals.get(i).toString() + " ");
@@ -137,7 +137,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      * @return
      */
     public String toSimpleString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("DataSet, label: " + (getLabel() == null ? "" : getLabel()) + ", entries: " + mYVals.size() + "\n");
         return buffer.toString();
     }
@@ -161,10 +161,10 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         float val = e.getVal();
 
         if (mYVals == null) {
-            mYVals = new ArrayList<T>();
+            mYVals = new ArrayList<>();
         }
 
-        if (mYVals.size() == 0) {
+        if (mYVals.isEmpty()) {
             mYMax = val;
             mYMin = val;
         } else {
@@ -174,7 +174,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
                 mYMin = val;
         }
 
-        if (mYVals.size() > 0 && mYVals.get(mYVals.size() - 1).getXIndex() > e.getXIndex()) {
+        if (!mYVals.isEmpty() && mYVals.get(mYVals.size() - 1).getXIndex() > e.getXIndex()) {
             int closestIndex = getEntryIndex(e.getXIndex(), Rounding.UP);
             mYVals.add(closestIndex, e);
             return;
@@ -199,10 +199,10 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
 
         List<T> yVals = getYVals();
         if (yVals == null) {
-            yVals = new ArrayList<T>();
+            yVals = new ArrayList<>();
         }
 
-        if (yVals.size() == 0) {
+        if (yVals.isEmpty()) {
             mYMax = val;
             mYMin = val;
         } else {
@@ -312,6 +312,20 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
             return Float.NaN;
     }
 
+    @Override
+    public float[] getYValsForXIndex(int xIndex) {
+
+        List<T> entries = getEntriesForXIndex(xIndex);
+
+        float[] yVals = new float[entries.size()];
+        int i = 0;
+
+        for (T e : entries)
+            yVals[i++] = e.getVal();
+
+        return yVals;
+    }
+
     /**
      * Returns all Entry objects at the given xIndex. INFORMATION: This method
      * does calculations at runtime. Do not over-use in performance critical
@@ -320,9 +334,10 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      * @param xIndex
      * @return
      */
+    @Override
     public List<T> getEntriesForXIndex(int xIndex) {
 
-        List<T> entries = new ArrayList<T>();
+        List<T> entries = new ArrayList<>();
 
         int low = 0;
         int high = mYVals.size() - 1;
@@ -344,12 +359,14 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
                         break;
                     }
                 }
-            }
 
-            if (xIndex > entry.getXIndex())
-                low = m + 1;
-            else
-                high = m - 1;
+                break;
+            } else {
+                if (xIndex > entry.getXIndex())
+                    low = m + 1;
+                else
+                    high = m - 1;
+            }
         }
 
         return entries;

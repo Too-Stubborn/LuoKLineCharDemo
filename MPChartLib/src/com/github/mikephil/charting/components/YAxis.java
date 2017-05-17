@@ -347,6 +347,7 @@ public class YAxis extends AxisBase {
     }
 
     /**
+     * @deprecated Kept for backward compatibility.
      * This method is deprecated.
      * Use setAxisMinValue(...) / setAxisMaxValue(...) instead.
      *
@@ -559,11 +560,8 @@ public class YAxis extends AxisBase {
      * @return
      */
     public boolean needsOffset() {
-        if (isEnabled() && isDrawLabelsEnabled() && getLabelPosition() == YAxisLabelPosition
-                .OUTSIDE_CHART)
-            return true;
-        else
-            return false;
+        return (isEnabled() && isDrawLabelsEnabled() && getLabelPosition() == YAxisLabelPosition
+                .OUTSIDE_CHART);
     }
 
     /**

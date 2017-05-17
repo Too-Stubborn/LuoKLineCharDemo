@@ -27,6 +27,12 @@ import java.util.List;
 public class FileUtils {
 
     private static final String LOG = "MPChart-FileUtils";
+    
+    /**
+     * Prevent class instantiation.
+     */
+    private FileUtils() {
+    }
 
     /**
      * Loads a an Array of Entries from a textfile from the sd-card.
@@ -41,11 +47,12 @@ public class FileUtils {
         // Get the text file
         File file = new File(sdcard, path);
 
-        List<Entry> entries = new ArrayList<Entry>();
-
+        List<Entry> entries = new ArrayList<>();
+        @SuppressWarnings("resource")
+        BufferedReader br = null;
+        
         try {
-            @SuppressWarnings("resource")
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            br = new BufferedReader(new FileReader(file));
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -66,6 +73,13 @@ public class FileUtils {
             }
         } catch (IOException e) {
             Log.e(LOG, e.toString());
+        } finally {
+            if (br != null)
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    Log.e(LOG, e.toString());
+                }
         }
 
         return entries;
@@ -108,7 +122,7 @@ public class FileUtils {
      */
     public static List<Entry> loadEntriesFromAssets(AssetManager am, String path) {
 
-        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
 
         BufferedReader reader = null;
         try {
@@ -209,10 +223,11 @@ public class FileUtils {
                 Log.e(LOG, e.toString());
             }
         }
+        BufferedWriter buf = null;
         try
         {
             // BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(saved, true));
+            buf = new BufferedWriter(new FileWriter(saved, true));
 
             for (Entry e : entries) {
 
@@ -220,16 +235,23 @@ public class FileUtils {
                 buf.newLine();
             }
 
-            buf.close();
         } catch (IOException e)
         {
             Log.e(LOG, e.toString());
+        } finally 
+        {
+            if (buf != null)
+                try {
+                    buf.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
     public static List<BarEntry> loadBarEntriesFromAssets(AssetManager am, String path) {
 
-        List<BarEntry> entries = new ArrayList<BarEntry>();
+        List<BarEntry> entries = new ArrayList<>();
 
         BufferedReader reader = null;
         try {

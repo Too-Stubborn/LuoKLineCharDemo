@@ -3,7 +3,6 @@ package com.github.mikephil.charting.data.realm.implementation;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
-import android.graphics.drawable.Drawable;
 
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.realm.base.RealmLineRadarDataSet;
@@ -40,7 +39,10 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
     /**
      * the radius of the circle-shaped value indicators
      */
-    private float mCircleSize = 8f;
+    private float mCircleRadius = 8f;
+
+    /** the hole radius of the circle-shaped value indicators */
+    private float mCircleHoleRadius = 4f;
 
     /**
      * sets the intensity of the cubic lines
@@ -72,7 +74,7 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
      */
     public RealmLineDataSet(RealmResults<T> result, String yValuesField) {
         super(result, yValuesField);
-        mCircleColors = new ArrayList<Integer>();
+        mCircleColors = new ArrayList<>();
 
         // default color
         mCircleColors.add(Color.rgb(140, 234, 255));
@@ -90,18 +92,13 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
      */
     public RealmLineDataSet(RealmResults<T> result, String yValuesField, String xIndexField) {
         super(result, yValuesField, xIndexField);
-        mCircleColors = new ArrayList<Integer>();
+        mCircleColors = new ArrayList<>();
 
         // default color
         mCircleColors.add(Color.rgb(140, 234, 255));
 
         build(this.results);
         calcMinMax(0, results.size());
-    }
-
-    @Override
-    public void build(RealmResults<T> results) {
-        super.build(results);
     }
 
     /**
@@ -151,12 +148,27 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
      * @param size
      */
     public void setCircleSize(float size) {
-        mCircleSize = Utils.convertDpToPixel(size);
+        mCircleRadius = Utils.convertDpToPixel(size);
     }
 
     @Override
     public float getCircleRadius() {
-        return mCircleSize;
+        return mCircleRadius;
+    }
+
+    /**
+     * sets the hole radius of the drawn circles.
+     * Default radius = 2f
+     *
+     * @param holeRadius
+     */
+    public void setCircleHoleRadius(float holeRadius) {
+        mCircleHoleRadius = Utils.convertDpToPixel(holeRadius);
+    }
+
+    @Override
+    public float getCircleHoleRadius() {
+        return mCircleHoleRadius;
     }
 
     /**
@@ -206,22 +218,38 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
         return mDrawCircles;
     }
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @param enabled
+     */
     @Deprecated
     public void setDrawCubic(boolean enabled) {
         mMode = enabled ? LineDataSet.Mode.CUBIC_BEZIER : LineDataSet.Mode.LINEAR;
     }
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @return
+     */
     @Deprecated
     @Override
     public boolean isDrawCubicEnabled() {
         return mMode == LineDataSet.Mode.CUBIC_BEZIER;
     }
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @param enabled
+     */
     @Deprecated
     public void setDrawStepped(boolean enabled) {
         mMode = enabled ? LineDataSet.Mode.STEPPED : LineDataSet.Mode.LINEAR;
     }
 
+    /**
+     * @deprecated Kept for backward compatibility.
+     * @return
+     */
     @Deprecated
     @Override
     public boolean isDrawSteppedEnabled() {
@@ -282,7 +310,7 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
      */
     public void setCircleColors(int[] colors, Context c) {
 
-        List<Integer> clrs = new ArrayList<Integer>();
+        List<Integer> clrs = new ArrayList<>();
 
         for (int color : colors) {
             clrs.add(c.getResources().getColor(color));
@@ -306,7 +334,7 @@ public class RealmLineDataSet<T extends RealmObject> extends RealmLineRadarDataS
      * resets the circle-colors array and creates a new one
      */
     public void resetCircleColors() {
-        mCircleColors = new ArrayList<Integer>();
+        mCircleColors = new ArrayList<>();
     }
 
     /**

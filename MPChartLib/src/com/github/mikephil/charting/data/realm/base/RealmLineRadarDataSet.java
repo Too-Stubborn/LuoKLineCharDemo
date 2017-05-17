@@ -7,7 +7,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.datasets.ILineRadarDataSet;
 import com.github.mikephil.charting.utils.Utils;
 
-import io.realm.DynamicRealmObject;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 
@@ -45,30 +44,6 @@ public abstract class RealmLineRadarDataSet<T extends RealmObject> extends Realm
      */
     public RealmLineRadarDataSet(RealmResults<T> results, String yValuesField, String xIndexField) {
         super(results, yValuesField, xIndexField);
-    }
-
-    @Override
-    public void build(RealmResults<T> results) {
-
-        if (mIndexField == null) { // x-index not available
-
-            int xIndex = 0;
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new Entry(dynamicObject.getFloat(mValuesField), xIndex));
-                xIndex++;
-            }
-
-        } else {
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new Entry(dynamicObject.getFloat(mValuesField), dynamicObject.getInt(mIndexField)));
-            }
-        }
     }
 
     @Override

@@ -38,8 +38,14 @@ public abstract class Utils {
     private static DisplayMetrics mMetrics;
     private static int mMinimumFlingVelocity = 50;
     private static int mMaximumFlingVelocity = 8000;
-    public final static double DEG2RAD = (Math.PI / 180.0);
-    public final static float FDEG2RAD = ((float) Math.PI / 180.f);
+    public static final double DEG2RAD = (Math.PI / 180.0);
+    public static final float FDEG2RAD = ((float) Math.PI / 180.f);
+    
+    /**
+     * Prevent class instantiation.
+     */
+    private Utils() {
+    }
 
     /**
      * initialize method, called inside the Chart.init() method.
@@ -69,6 +75,7 @@ public abstract class Utils {
     }
 
     /**
+     * @deprecated Kept for backward compatibility.
      * initialize method, called inside the Chart.init() method. backwards
      * compatibility - to not break existing code
      *
@@ -109,8 +116,7 @@ public abstract class Utils {
         }
 
         DisplayMetrics metrics = mMetrics;
-        float px = dp * (metrics.densityDpi / 160f);
-        return px;
+        return dp * (metrics.densityDpi / 160f);
     }
 
     /**
@@ -135,8 +141,7 @@ public abstract class Utils {
         }
 
         DisplayMetrics metrics = mMetrics;
-        float dp = px / (metrics.densityDpi / 160f);
-        return dp;
+        return px / (metrics.densityDpi / 160f);
     }
 
     /**
@@ -195,7 +200,7 @@ public abstract class Utils {
      * Math.pow(...) is very expensive, so avoid calling it and create it
      * yourself.
      */
-    private static final int POW_10[] = {
+    private static final int[] POW_10 = {
             1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
     };
 
@@ -388,10 +393,48 @@ public abstract class Utils {
      * @param valsAtIndex all the values at a specific index
      * @return
      */
-    public static int getClosestDataSetIndex(List<SelectionDetail> valsAtIndex, float val,
+    public static int getClosestDataSetIndexByValue(List<SelectionDetail> valsAtIndex, float value,
                                              AxisDependency axis) {
 
-        int index = -Integer.MAX_VALUE;
+        SelectionDetail sel = getClosestSelectionDetailByValue(valsAtIndex, value, axis);
+
+        if (sel == null)
+            return -Integer.MAX_VALUE;
+
+        return sel.dataSetIndex;
+    }
+
+    /**
+     * Returns the index of the DataSet that contains the closest value on the
+     * y-axis. This is needed for highlighting. This will return -Integer.MAX_VALUE if failure.
+     *
+     * @param valsAtIndex all the values at a specific index
+     * @return
+     */
+    public static int getClosestDataSetIndexByPixelY(List<SelectionDetail> valsAtIndex, float y,
+                                                    AxisDependency axis) {
+
+        SelectionDetail sel = getClosestSelectionDetailByPixelY(valsAtIndex, y, axis);
+
+        if (sel == null)
+            return -Integer.MAX_VALUE;
+
+        return sel.dataSetIndex;
+    }
+
+    /**
+     * Returns the SelectionDetail of the DataSet that contains the closest value on the
+     * y-axis.
+     *
+     * @param valsAtIndex all the values at a specific index
+     * @return
+     */
+    public static SelectionDetail getClosestSelectionDetailByValue(
+            List<SelectionDetail> valsAtIndex,
+            float value,
+            AxisDependency axis) {
+
+        SelectionDetail closest = null;
         float distance = Float.MAX_VALUE;
 
         for (int i = 0; i < valsAtIndex.size(); i++) {
@@ -400,15 +443,47 @@ public abstract class Utils {
 
             if (axis == null || sel.dataSet.getAxisDependency() == axis) {
 
-                float cdistance = Math.abs((float) sel.val - val);
+                float cdistance = Math.abs(sel.value - value);
                 if (cdistance < distance) {
-                    index = valsAtIndex.get(i).dataSetIndex;
+                    closest = sel;
                     distance = cdistance;
                 }
             }
         }
 
-        return index;
+        return closest;
+    }
+
+    /**
+     * Returns the SelectionDetail of the DataSet that contains the closest value on the
+     * y-axis.
+     *
+     * @param valsAtIndex all the values at a specific index
+     * @return
+     */
+    public static SelectionDetail getClosestSelectionDetailByPixelY(
+            List<SelectionDetail> valsAtIndex,
+            float y,
+            AxisDependency axis) {
+
+        SelectionDetail closest = null;
+        float distance = Float.MAX_VALUE;
+
+        for (int i = 0; i < valsAtIndex.size(); i++) {
+
+            SelectionDetail sel = valsAtIndex.get(i);
+
+            if (axis == null || sel.dataSet.getAxisDependency() == axis) {
+
+                float cdistance = Math.abs(sel.y - y);
+                if (cdistance < distance) {
+                    closest = sel;
+                    distance = cdistance;
+                }
+            }
+        }
+
+        return closest;
     }
 
     /**
@@ -416,11 +491,12 @@ public abstract class Utils {
      * closest y-value (in pixels) that is displayed in the chart.
      *
      * @param valsAtIndex
-     * @param val
+     * @param y
      * @param axis
      * @return
      */
-    public static float getMinimumDistance(List<SelectionDetail> valsAtIndex, float val,
+    public static float getMinimumDistance(List<SelectionDetail> valsAtIndex,
+                                           float y,
                                            AxisDependency axis) {
 
         float distance = Float.MAX_VALUE;
@@ -431,7 +507,7 @@ public abstract class Utils {
 
             if (sel.dataSet.getAxisDependency() == axis) {
 
-                float cdistance = Math.abs(sel.val - val);
+                float cdistance = Math.abs(sel.y - y);
                 if (cdistance < distance) {
                     distance = cdistance;
                 }
@@ -467,9 +543,8 @@ public abstract class Utils {
      */
     public static PointF getPosition(PointF center, float dist, float angle) {
 
-        PointF p = new PointF((float) (center.x + dist * Math.cos(Math.toRadians(angle))),
+        return new PointF((float) (center.x + dist * Math.cos(Math.toRadians(angle))),
                 (float) (center.y + dist * Math.sin(Math.toRadians(angle))));
-        return p;
     }
 
     public static void velocityTrackerPointerUpCleanUpIfNecessary(MotionEvent ev,
@@ -540,9 +615,8 @@ public abstract class Utils {
         float drawOffsetX = 0.f;
         float drawOffsetY = 0.f;
 
+        final float lineHeight = paint.getFontMetrics(mFontMetricsBuffer);
         paint.getTextBounds(text, 0, text.length(), mDrawTextRectBuffer);
-
-        final float lineHeight = mDrawTextRectBuffer.height();
 
         // Android sometimes has pre-padding
         drawOffsetX -= mDrawTextRectBuffer.left;
@@ -550,7 +624,7 @@ public abstract class Utils {
         // Android does not snap the bounds to line boundaries,
         //  and draws from bottom to top.
         // And we want to normalize it.
-        drawOffsetY += lineHeight;
+        drawOffsetY += -mFontMetricsBuffer.ascent;
 
         // To have a consistent point of reference, we always draw left-aligned
         Paint.Align originalTextAlign = paint.getTextAlign();
@@ -719,7 +793,7 @@ public abstract class Utils {
     }
 
     public static int getSDKInt() {
-        return android.os.Build.VERSION.SDK_INT;
+        return Build.VERSION.SDK_INT;
     }
 
     /**

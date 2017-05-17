@@ -17,7 +17,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 /**
  * Superclass of all render classes for the different data types (line, bar, ...).
- *
+ * 初始化画板。。。
  * @author Philipp Jahoda
  */
 public abstract class DataRenderer extends Renderer {
@@ -60,7 +60,7 @@ public abstract class DataRenderer extends Renderer {
         mValuePaint.setTextSize(Utils.convertDpToPixel(9f));
 
         mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mHighlightPaint.setStyle(Paint.Style.STROKE);
+        mHighlightPaint.setStyle(Style.STROKE);
         mHighlightPaint.setStrokeWidth(2f);
         mHighlightPaint.setColor(Color.rgb(255, 187, 115));
     }

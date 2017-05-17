@@ -15,8 +15,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
@@ -79,6 +77,11 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
      * chart is enabled
      */
     protected boolean mHighlightPerDragEnabled = true;
+
+    /**
+     * flag that indicates whether the highlight should be full-bar oriented, or single-value?
+     */
+    protected boolean mHighlightFullBarEnabled = false;
 
     /**
      * if true, dragging is enabled for the chart
@@ -256,6 +259,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
         mRenderer.drawExtras(canvas);
 
+        clipRestoreCount = canvas.save();
+        canvas.clipRect(mViewPortHandler.getContentRect());
+        
         if (!mXAxis.isDrawLimitLinesBehindDataEnabled())
             mXAxisRenderer.renderLimitLines(canvas);
 
@@ -264,6 +270,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
         if (!mAxisRight.isDrawLimitLinesBehindDataEnabled())
             mAxisRendererRight.renderLimitLines(canvas);
+
+        canvas.restoreToCount(clipRestoreCount);
 
         mXAxisRenderer.renderAxisLabels(canvas);
         mAxisRendererLeft.renderAxisLabels(canvas);
@@ -802,7 +810,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
      * @param minXRange The minimum visible range of x-values.
      */
     public void setVisibleXRangeMinimum(float minXRange) {
-        float xScale = mXAxis.mAxisRange / (minXRange);
+        float xScale = mXAxis.mAxisRange / minXRange;
         mViewPortHandler.setMaximumScaleX(xScale);
     }
 
@@ -994,7 +1002,20 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
             }
         });
     }
+    public void setViewPortTopOffsets(final float top) {
 
+        mCustomViewPortEnabled = true;
+        post(new Runnable() {
+
+            @Override
+            public void run() {
+
+                mViewPortHandler.restrainViewPort(getExtraLeftOffset(), top, getExtraRightOffset(), getExtraBottomOffset());
+                prepareOffsetMatrix();
+                prepareValuePxMatrix();
+            }
+        });
+    }
     /**
      * Resets all custom offsets set via setViewPortOffsets(...) method. Allows
      * the chart to again calculate all offsets automatically.
@@ -1087,6 +1108,23 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
     public boolean isHighlightPerDragEnabled() {
         return mHighlightPerDragEnabled;
+    }
+
+    /**
+     * Set this to true to make the highlight full-bar oriented,
+     * false to make it highlight single values
+     *
+     * @param enabled
+     */
+    public void setHighlightFullBarEnabled(boolean enabled) {
+        mHighlightFullBarEnabled = enabled;
+    }
+
+    /**
+     * @return true the highlight is be full-bar oriented, false if single-value
+     */
+    public boolean isHighlightFullBarEnabled() {
+        return mHighlightFullBarEnabled;
     }
 
     /**

@@ -5,9 +5,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.realm.base.RealmLineScatterCandleRadarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.Utils;
 
-import io.realm.DynamicRealmObject;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 
@@ -65,30 +63,6 @@ public class RealmScatterDataSet<T extends RealmObject> extends RealmLineScatter
 
         build(this.results);
         calcMinMax(0, results.size());
-    }
-
-    @Override
-    public void build(RealmResults<T> results) {
-
-        if (mIndexField == null) { // x-index not available
-
-            int xIndex = 0;
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new Entry(dynamicObject.getFloat(mValuesField), xIndex));
-                xIndex++;
-            }
-
-        } else {
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new Entry(dynamicObject.getFloat(mValuesField), dynamicObject.getInt(mIndexField)));
-            }
-        }
     }
 
     /**

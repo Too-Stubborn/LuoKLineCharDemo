@@ -119,29 +119,15 @@ public class RealmCandleDataSet<T extends RealmObject> extends RealmLineScatterC
         calcMinMax(0, this.results.size());
     }
 
-    @Override
-    public void build(RealmResults<T> results) {
+    public CandleEntry buildEntryFromResultObject(T realmObject, int xIndex) {
+        DynamicRealmObject dynamicObject = new DynamicRealmObject(realmObject);
 
-        if (mIndexField == null) {
-
-            int xIndex = 0;
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new CandleEntry(xIndex, dynamicObject.getFloat(mHighField), dynamicObject.getFloat(mLowField),
-                        dynamicObject.getFloat(mOpenField), dynamicObject.getFloat(mCloseField)));
-                xIndex++;
-            }
-        } else {
-
-            for (T object : results) {
-
-                DynamicRealmObject dynamicObject = new DynamicRealmObject(object);
-                mValues.add(new CandleEntry(dynamicObject.getInt(mIndexField), dynamicObject.getFloat(mHighField), dynamicObject.getFloat(mLowField),
-                        dynamicObject.getFloat(mOpenField), dynamicObject.getFloat(mCloseField)));
-            }
-        }
+        return new CandleEntry(
+                mIndexField == null ? xIndex : dynamicObject.getInt(mIndexField),
+                dynamicObject.getFloat(mHighField),
+                dynamicObject.getFloat(mLowField),
+                dynamicObject.getFloat(mOpenField),
+                dynamicObject.getFloat(mCloseField));
     }
 
     @Override
@@ -150,7 +136,7 @@ public class RealmCandleDataSet<T extends RealmObject> extends RealmLineScatterC
         if (mValues == null)
             return;
 
-        if (mValues.size() == 0)
+        if (mValues.isEmpty())
             return;
 
         int endValue;

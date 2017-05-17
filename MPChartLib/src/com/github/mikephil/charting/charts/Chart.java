@@ -69,8 +69,8 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
     /**
      * flag that indicates if logging is enabled or not
      */
-    protected boolean mLogEnabled = false;
-
+    protected boolean mLogEnabled = true;
+    private boolean hasHighlightlongTime = true;
     /**
      * object that holds all data that was originally set for the chart, before
      * it was modified or any filtering algorithms had been applied
@@ -353,10 +353,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
             return true;
         else {
 
-            if (mData.getYValCount() <= 0)
-                return true;
-            else
-                return false;
+            return mData.getYValCount() <= 0;
         }
     }
 
@@ -386,7 +383,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     protected void calculateFormatter(float min, float max) {
 
-        float reference = 0f;
+        float reference;
 
         if (mData == null || mData.getXValCount() < 2) {
 
@@ -459,7 +456,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     protected void drawDescription(Canvas c) {
 
-        if (!mDescription.equals("")) {
+        if (!"".equals(mDescription)) {
 
             if (mDescriptionPosition == null) {
 
@@ -556,15 +553,24 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @param dataSetIndex
      */
     public void highlightValue(int xIndex, int dataSetIndex) {
+        highlightValue(xIndex, dataSetIndex, true);
+    }
+
+    /**
+     * Highlights the value at the given x-index in the given DataSet. Provide
+     * -1 as the x-index or dataSetIndex to undo all highlighting.
+     *
+     * @param xIndex
+     * @param dataSetIndex
+     */
+    public void highlightValue(int xIndex, int dataSetIndex, boolean callListener) {
 
         if (xIndex < 0 || dataSetIndex < 0 || xIndex >= mData.getXValCount()
                 || dataSetIndex >= mData.getDataSetCount()) {
 
-            highlightValues(null);
+            highlightValue(null, callListener);
         } else {
-            highlightValues(new Highlight[]{
-                    new Highlight(xIndex, dataSetIndex)
-            });
+            highlightValue(new Highlight(xIndex, dataSetIndex), callListener);
         }
     }
 
@@ -598,10 +604,14 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
                 Log.i(LOG_TAG, "Highlighted: " + high.toString());
 
             e = mData.getEntryForHighlight(high);
-            if (e == null || e.getXIndex() != high.getXIndex()) {
+            if (e == null) {
                 mIndicesToHighlight = null;
                 high = null;
             } else {
+                if (this instanceof BarLineChartBase
+                        && ((BarLineChartBase)this).isHighlightFullBarEnabled())
+                    high = new Highlight(high.getXIndex(), Float.NaN, -1, -1, -1);
+
                 // set the indices to highlight
                 mIndicesToHighlight = new Highlight[]{
                         high
@@ -623,6 +633,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
     }
 
     /**
+     * @deprecated Kept for backward compatibility.
      * Deprecated. Calls highlightValue(high, true)
      */
     @Deprecated
@@ -981,6 +992,11 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      *
      * @return
      */
+
+    public boolean isHighlightEnabled() {
+        return mData == null ? true : mData.isHighlightEnabled();
+    }
+
     public float getYMax() {
         return mData.getYMax();
     }
@@ -1394,7 +1410,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     public List<Entry> getEntriesAtIndex(int xIndex) {
 
-        List<Entry> vals = new ArrayList<Entry>();
+        List<Entry> vals = new ArrayList<>();
 
         for (int i = 0; i < mData.getDataSetCount(); i++) {
 
@@ -1508,7 +1524,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
 
         Bitmap b = getChartBitmap();
 
-        OutputStream stream = null;
+        OutputStream stream;
         try {
             stream = new FileOutputStream(Environment.getExternalStorageDirectory().getPath()
                     + pathOnSD + "/" + title
@@ -1541,7 +1557,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @param quality         e.g. 50, min = 0, max = 100
      * @return returns true if saving was successful, false if not
      */
-    public boolean saveToGallery(String fileName, String subFolderPath, String fileDescription, Bitmap.CompressFormat format, int quality) {
+    public boolean saveToGallery(String fileName, String subFolderPath, String fileDescription, CompressFormat format, int quality) {
         // restrain quality
         if (quality < 0 || quality > 100)
             quality = 50;
@@ -1556,7 +1572,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
             }
         }
 
-        String mimeType = "";
+        String mimeType;
         switch (format) {
             case PNG:
                 mimeType = "image/png";
@@ -1577,7 +1593,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
         }
 
         String filePath = file.getAbsolutePath() + "/" + fileName;
-        FileOutputStream out = null;
+        FileOutputStream out;
         try {
             out = new FileOutputStream(filePath);
 
@@ -1620,13 +1636,13 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @return returns true if saving was successful, false if not
      */
     public boolean saveToGallery(String fileName, int quality) {
-        return saveToGallery(fileName, "", "MPAndroidChart-Library Save", Bitmap.CompressFormat.JPEG, quality);
+        return saveToGallery(fileName, "", "MPAndroidChart-Library Save", CompressFormat.JPEG, quality);
     }
 
     /**
      * tasks to be done after the view is setup
      */
-    protected ArrayList<Runnable> mJobs = new ArrayList<Runnable>();
+    protected ArrayList<Runnable> mJobs = new ArrayList<>();
 
     public void removeViewportJob(Runnable job) {
         mJobs.remove(job);

@@ -2,6 +2,7 @@ package com.github.mikephil.charting.renderer;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.interfaces.datasets.ILineScatterCandleRadarDataSet;
@@ -9,6 +10,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 /**
  * Created by Philipp Jahoda on 11/07/15.
+ * 高亮
  */
 public abstract class LineScatterCandleRadarRenderer extends DataRenderer {
 
@@ -46,6 +48,8 @@ public abstract class LineScatterCandleRadarRenderer extends DataRenderer {
             mHighlightLinePath.lineTo(pts[0], mViewPortHandler.contentBottom());
 
             c.drawPath(mHighlightLinePath, mHighlightPaint);
+
+
         }
 
         // draw horizontal highlight lines

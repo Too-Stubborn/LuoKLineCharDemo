@@ -7,7 +7,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Path;
 
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.LimitLine.LimitLabelPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
 import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition;
@@ -87,7 +86,7 @@ public class YAxisRendererHorizontalBarChart extends YAxisRenderer {
         AxisDependency dependency = mYAxis.getAxisDependency();
         YAxisLabelPosition labelPosition = mYAxis.getLabelPosition();
 
-        float yPos = 0f;
+        float yPos;
 
         if (dependency == AxisDependency.LEFT) {
 
@@ -235,7 +234,7 @@ public class YAxisRendererHorizontalBarChart extends YAxisRenderer {
             String label = l.getLabel();
 
             // if drawing the limit-value label is enabled
-            if (label != null && !label.equals("")) {
+            if (label != null && !"".equals(label)) {
 
                 mLimitLinePaint.setStyle(l.getTextStyle());
                 mLimitLinePaint.setPathEffect(null);
