@@ -111,8 +111,8 @@ public class TrendChartView extends View {
 
         differencePrice = (maxPrice - minPrice) / lineCount;
 
-        minPricePoint = 820;
-        maxPricePoint = 850;
+        minPricePoint = new Double( differenceArray[0]).intValue();
+        maxPricePoint = new Double(  differenceArray[differenceArray.length - 1]).intValue();
 
         if (triggerLevel == 2) {
             drawBg();
@@ -306,7 +306,7 @@ public class TrendChartView extends View {
         txtPaint.setStrokeWidth(1);
         txtPaint.setTextSize(fontSize);
 
-        String[] lineMultipleTxt = new String[]{"850", "840", "830", "820"};
+        String[] lineMultipleTxt = new String[]{"750", "740", "730", "720"};
         for (int i = 0; i < lineMultipleTxt.length; i++) {
             int lineMultiple = (frameRect.height() / (lineCount + 1)) * i;
 

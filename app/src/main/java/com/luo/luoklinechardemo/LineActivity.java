@@ -28,8 +28,8 @@ public class LineActivity extends AppCompatActivity {
 
 
         Random random = new Random();
-        int max = 850;
-        int min = 820;
+        int max = 750;
+        int min = 720;
 
         List<TrendBean> trendList = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
